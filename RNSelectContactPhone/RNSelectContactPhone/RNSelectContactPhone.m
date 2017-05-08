@@ -115,11 +115,54 @@ RCT_EXPORT_METHOD(selectPhone:(BOOL *)boolType
         phoneNumber = (__bridge_transfer NSString *)phoneID;
     }
     
+    NSString *firstName = (__bridge_transfer NSString *)ABRecordCopyValue(person, kABPersonFirstNameProperty);
+    
+    //get the middle name
+    NSString *middleName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonMiddleNameProperty);
+    
+    // get the last name
+    NSString *lastName = (__bridge_transfer NSString *)ABRecordCopyValue(person, kABPersonLastNameProperty);
+    
+    // set the return strings
+    NSString* returnFirstName;
+    NSString* returnLastName;
+    NSString* returnMiddleName;
+    
+    // check for null values
+    if (firstName) {
+        returnFirstName = firstName;
+    } else {
+        returnFirstName = @"";
+    }
+    
+    // check for null values
+    if (lastName) {
+        returnLastName = lastName;
+    } else {
+        returnLastName = @"";
+    }
+    
+    // check for null values
+    if (middleName) {
+        returnMiddleName = middleName;
+    } else {
+        returnMiddleName = @"";
+    }
+    
+    // Set the return dictionary
+    NSDictionary *resultsDict = @{
+                                  @"firstName" : returnFirstName,
+                                  @"middleName" : returnMiddleName,
+                                  @"lastName" : returnLastName,
+                                  @"phoneNumber" : phoneNumber,
+                                  };
+
+  
     UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     [vc dismissViewControllerAnimated:YES completion:nil];
     
     // resolve the phone number
-    self.resolve(phoneNumber);
+    self.resolve(resultsDict);
 }
 
 -(BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier{
